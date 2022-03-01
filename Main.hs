@@ -42,15 +42,34 @@
     Creates a sorting network with n wires.
 
     -}
+read_f = do
+    putStrLn  "Read initiated"
 
-main :: IO ()
-main = do
+run_f = do
+    putStrLn  "Run initiated"
+
+parallel_f = do
+    putStrLn  "Parallel initiated"
+
+sorting_f = do
+    putStrLn  "Sorting initiated"
+
+create_f = do
+    putStrLn  "Create initiated"
+
+handle_command = do
     putStrLn "Enter Command: "
     cmd <- getLine
 
     case words cmd of
-        ("Read":_) -> putStrLn  "Read initiated"
-        ("Run":_) -> putStrLn  "Run initiated"
-        ("Parallel":_) -> putStrLn  "Parallel initiated"
-        ("Sorting":_) -> putStrLn  "Sorting initiated"
-        ("Create":_) -> putStrLn  "Create initiated"
+        ("Read":_) -> read_f
+        ("Run":_) -> run_f
+        ("Parallel":_) -> parallel_f
+        ("Sorting":_) -> sorting_f
+        ("Create":_) -> create_f
+        otherwise -> putStrLn "Invalid Command"
+    handle_command
+
+main :: IO ()
+main = do
+    handle_command
