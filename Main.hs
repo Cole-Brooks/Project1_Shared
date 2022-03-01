@@ -42,31 +42,37 @@
     Creates a sorting network with n wires.
 
     -}
-read_f = do
-    putStrLn  "Read initiated"
+read_f :: String -> IO ()
+read_f file_name = do
+    putStrLn  file_name
 
-run_f = do
-    putStrLn  "Run initiated"
+run_f :: String -> IO ()
+run_f str_in = do
+    -- note that the string massaging will need to be done here
+    putStrLn  str_in
 
-parallel_f = do
-    putStrLn  "Parallel initiated"
+parallel_f :: String -> IO ()
+parallel_f file_name = do
+    putStrLn  file_name
 
-sorting_f = do
-    putStrLn  "Sorting initiated"
+sorting_f :: String -> IO ()
+sorting_f file_name = do
+    putStrLn  file_name
 
-create_f = do
-    putStrLn  "Create initiated"
+create_f :: String -> IO ()
+create_f str_in = do
+    putStrLn  str_in
 
 handle_command = do
     putStrLn "Enter Command: "
     cmd <- getLine
 
     case words cmd of
-        ("Read":_) -> read_f
-        ("Run":_) -> run_f
-        ("Parallel":_) -> parallel_f
-        ("Sorting":_) -> sorting_f
-        ("Create":_) -> create_f
+        ("Read":_) -> read_f (drop 5 cmd)
+        ("Run":_) -> run_f (drop 4 cmd)
+        ("Parallel":_) -> parallel_f (drop 9 cmd)
+        ("Sorting":_) -> sorting_f (drop 8 cmd)
+        ("Create":_) -> create_f (drop 7 cmd)
         otherwise -> putStrLn "Invalid Command"
     handle_command
 
