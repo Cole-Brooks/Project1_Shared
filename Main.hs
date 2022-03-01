@@ -1,3 +1,5 @@
+import Control.Monad
+import System.IO
     {-
     User will use command 
     runhaskell Main.hs
@@ -79,3 +81,17 @@ handle_command = do
 main :: IO ()
 main = do
     handle_command
+
+
+parsePairs :: String -> IO [(Int,Int)]
+parsePairs fn = do
+        handle <- openFile fn ReadMode
+        contents <- hGetContents handle
+        let contentData = read contents :: [(Int,Int)]
+        print(contentData)
+        hClose handle
+        return contentData
+
+main2 = do
+        pairs <- parsePairs "sort1.txt"
+        print pairs
