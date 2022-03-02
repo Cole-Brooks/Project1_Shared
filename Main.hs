@@ -92,6 +92,16 @@ parsePairs fn = do
         hClose handle
         return contentData
 
+pairToBar :: (Int,Int) -> String
+pairToBar (a,b) = (show a) ++ " -- " ++ (show b)
+
+netPrint :: [(Int,Int)] -> IO ()
+netPrint (x:xs) = do
+        putStrLn(pairToBar x)
+        netPrint xs
+netPrint [] = return ()
+
 main2 = do
         pairs <- parsePairs "sort1.txt"
         print pairs
+        netPrint pairs
