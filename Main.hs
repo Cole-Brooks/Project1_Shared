@@ -1,5 +1,7 @@
 import Control.Monad
 import System.IO
+import System.Environment
+import Data.Char
     {-
     User will use command 
     runhaskell Main.hs
@@ -48,10 +50,10 @@ read_f :: String -> IO ()
 read_f file_name = do
     putStrLn  file_name
 
-run_f :: String -> IO ()
-run_f str_in = do
+run_f :: String -> [Int]-> IO ()
+run_f str_in seq = do
     -- note that the string massaging will need to be done here
-    putStrLn  str_in
+    putStrLn str_in
 
 parallel_f :: String -> IO ()
 parallel_f file_name = do
@@ -67,16 +69,16 @@ create_f str_in = do
 
 handle_command = do
     putStrLn "Enter Command: "
-    cmd <- getLine
+    cmd <- getArgs
 
-    case words cmd of
-        ("Read":_) -> read_f (drop 5 cmd)
-        ("Run":_) -> run_f (drop 4 cmd)
-        ("Parallel":_) -> parallel_f (drop 9 cmd)
-        ("Sorting":_) -> sorting_f (drop 8 cmd)
-        ("Create":_) -> create_f (drop 7 cmd)
+    case cmd of
+        ("Read":xs) -> read_f $ head xs
+        ("Run":xs) -> run_f (head xs)  (read (head (tail xs)))
+        ("Parallel":xs) -> parallel_f $ head xs
+        ("Sorting":xs) -> sorting_f $ head xs
+        ("Create":xs) -> create_f $ head xs
         otherwise -> putStrLn "Invalid Command"
-    handle_command
+    -- handle_command
 
 main :: IO ()
 main = do
@@ -100,6 +102,10 @@ netPrint (x:xs) = do
         putStrLn(pairToBar x)
         netPrint xs
 netPrint [] = return ()
+
+-- Writes the list
+part2 :: [(Int,Int)] -> IO ()
+part2 = undefined
 
 main2 = do
         pairs <- parsePairs "sort1.txt"
