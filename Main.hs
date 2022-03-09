@@ -50,10 +50,13 @@ read_f :: String -> IO ()
 read_f file_name = do
     (parsePairs file_name) >>= part2
 
-run_f :: String -> [Int]-> IO ()
-run_f str_in seq = do
+run_f :: String -> [Int] -> IO ()
+run_f str_in sequence = do
     -- note that the string massaging will need to be done here
-    putStrLn str_in
+        pairs <- parsePairs str_in
+        -- print pairs
+        -- netPrint pairs
+        putStrLn $ show (sortSeq sequence pairs)
 
 parallel_f :: String -> IO ()
 parallel_f file_name = do
@@ -113,3 +116,23 @@ main2 = do
         print pairs
         netPrint pairs
         part2 pairs
+
+
+swap :: [a] -> (Int,Int) -> [a]
+swap list (a,b) = [at_index item index | (item, index) <- zip list[0..length list - 1]]
+    where at_index x index | index == (a-1) = list !! (b-1)
+                           | index == (b-1) = list !! (a-1)
+                           | otherwise = x
+
+doSwap :: Ord a => [a] -> (Int, Int) -> Bool
+doSwap list (a,b) = (list !! (b-1))<(list !! (a-1))
+
+sortSeq :: Ord a => [a] -> [(Int,Int)] -> [a]
+sortSeq x [] = x
+sortSeq x (y:ys) = if (doSwap x y) then sortSeq (swap x y) ys else sortSeq x ys
+
+main3 = do
+        pairs <- parsePairs "sort1.txt"
+        print pairs
+        netPrint pairs
+        putStrLn $ show (sortSeq [5,1,3,0] pairs)
