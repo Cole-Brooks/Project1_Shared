@@ -48,7 +48,7 @@ import Data.Char
     -}
 read_f :: String -> IO ()
 read_f file_name = do
-    putStrLn  file_name
+    (parsePairs file_name) >>= part2
 
 run_f :: String -> [Int]-> IO ()
 run_f str_in seq = do
@@ -68,8 +68,9 @@ create_f str_in = do
     putStrLn  str_in
 
 handle_command = do
-    putStrLn "Enter Command: "
+    -- putStrLn "Enter Command: "
     cmd <- getArgs
+    putStrLn $ show cmd
 
     case cmd of
         ("Read":xs) -> read_f $ head xs
@@ -105,9 +106,10 @@ netPrint [] = return ()
 
 -- Writes the list
 part2 :: [(Int,Int)] -> IO ()
-part2 = undefined
+part2 x = writeFile "network.txt" (foldr (\i a -> i ++ "\n" ++ a) [] (fmap (pairToBar) x))
 
 main2 = do
         pairs <- parsePairs "sort1.txt"
         print pairs
         netPrint pairs
+        part2 pairs
