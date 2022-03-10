@@ -63,7 +63,6 @@ run_f str_in sequence = do
 
 parallel_f :: String -> IO ()
 parallel_f file_name = do
-    putStrLn "---------------------"
     (parsePairs file_name) >>= part4 
 
 sorting_f :: String -> IO ()
