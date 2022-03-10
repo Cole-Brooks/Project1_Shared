@@ -136,3 +136,6 @@ main3 = do
         print pairs
         netPrint pairs
         putStrLn $ show (sortSeq [5,1,3,0] pairs)
+
+createNetwork :: Int -> [(Int,Int)]
+createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
