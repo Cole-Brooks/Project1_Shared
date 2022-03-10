@@ -1,8 +1,9 @@
-import Control.Monad
+-- import Control.Monad
 import System.IO
-import System.Environment
+    ( hClose, hGetContents, openFile, IOMode(ReadMode) )
+import System.Environment ( getArgs )
 import Language.Haskell.TH.Lib (listP)
-import Data.List
+import Data.List ()
     {-
     User will use command 
     runhaskell Main.hs
@@ -155,7 +156,8 @@ main3 = do
 -- Writes the list
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
-    (mapM_ print (fmap (fmap pairToBarWSpace) (p_LoT x 0 [] [] [])))
+    writeFile "parallel.txt" (cLoLoT (p_LoT x 0 [] [] []) "")
+    -- (mapM_ print  (fmap (fmap pairToBarWSpace) (p_LoT x [] [])))
 
 -- part4 x = do
 --     outh <- openFile "parallel.txt" WriteMode 
@@ -169,6 +171,18 @@ part4 x = do
 
 
 --------------- part4 helpers --------------------
+-- Convert List of List of Tuples to String
+cLoLoT :: [[(Int,Int)]] -> String -> String
+cLoLoT [] tmpStr = tmpStr
+cLoLoT (input:input_end) tmpStr = do
+    cLoLoT input_end (tmpStr ++ cLoT input "")
+
+-- Convert List of Tuples to String
+cLoT :: [(Int, Int)] -> String -> String 
+cLoT [] tmpStr = tmpStr ++ "\n"
+cLoT (input:input_end) tmpStr = do
+    cLoT input_end (tmpStr ++ (pairToBarWSpace input))
+
 -- Parallelize List of Tuples
 p_LoT :: [(Int, Int)] -> Int -> [Int] -> [(Int,Int)] -> [[(Int,Int)]] -> [[(Int,Int)]]
 p_LoT input i u_wires p_steps out | ((length input) == i) = out ++ [p_steps]
@@ -177,6 +191,18 @@ p_LoT input i u_wires p_steps out = do
     if not ((fst (input!!i) `elem` u_wires) || (snd (input!!i) `elem` u_wires))
         then p_LoT input (i+1) (aTtL u_wires (input!!i)) (a_TtLoT p_steps (input!!i)) out
     else p_LoT input (i) [] [] (out ++ [p_steps])
+
+-- p_LoT :: [(Int, Int)] -> [(Int,Int)] -> [[(Int,Int)]]-> [[(Int,Int)]]
+-- p_LoT [] u_tuples out = out
+-- p_LoT input u_tuples out = p_LoT (tail input) u_tuples (out ++ [(fParals input [] (a_TtLoT u_tuples (head input)) [])])
+    
+-- -- find parallels
+-- fParals :: [(Int, Int)] -> [Int] -> [(Int, Int)] -> [(Int,Int)] -> [(Int,Int)]
+-- fParals [] u_wires u_tuples out = out
+-- fParals (input:input_end) u_wires u_tuples out = do
+--     if not (((fst input) `elem` u_wires || (snd input) `elem` u_wires) || input `elem` u_tuples)
+--         then fParals input_end (aTtL u_wires input) (a_TtLoT u_tuples input) (a_TtLoT out input)
+--     else fParals input_end u_wires u_tuples out
 
 -- Add Tuple to List of Tuples
 a_TtLoT :: [(Int, Int)] -> (Int,Int) -> [(Int,Int)]
