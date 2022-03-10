@@ -1,7 +1,8 @@
 import Control.Monad
 import System.IO
 import System.Environment
-
+import Language.Haskell.TH.Lib (listP)
+import Data.List
     {-
     User will use command 
     runhaskell Main.hs
@@ -104,6 +105,17 @@ parsePairs fn = do
 pairToBar :: (Int,Int) -> String
 pairToBar (a,b) = (show a) ++ " -- " ++ (show b)
 
+pairToBarWSpace :: (Int,Int) -> String 
+pairToBarWSpace (a,b) = " " ++ (show a) ++ " -- " ++ (show b) ++ " "
+
+listPairToBar :: [(Int, Int)] -> String -> String 
+listPairToBar [] str = str ++ "\n"
+listPairToBar (x:xs) str = listPairToBar xs (str ++ pairToBarWSpace x)
+
+loLPairToBar :: [[(Int, Int)]] -> String -> String
+loLPairToBar [] str = str
+loLPairToBar (x:xs) str = loLPairToBar xs (str ++ listPairToBar x str)
+
 netPrint :: [(Int,Int)] -> IO ()
 netPrint (x:xs) = do
         putStrLn(pairToBar x)
@@ -143,13 +155,23 @@ main3 = do
 -- Writes the list
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
-    putStrLn "--------Parallelize----------"
-    putStrLn (show (p_LoT x 0 [] [] []))
+    (mapM_ print (fmap (fmap pairToBarWSpace) (p_LoT x 0 [] [] [])))
+
+-- part4 x = do
+--     outh <- openFile "parallel.txt" WriteMode 
+--     part4_print (fmap (fmap pairToBarWSpace) (p_LoT x 0 [] [] [])) outh
+    
+-- part4_print :: [[String]] -> Handle -> IO ()
+-- part4_print [] outh = hClose outh
+-- part4_print (x:xs) outh = do
+--     hPutStrLn outh (head x ++ tail x)
+--     part4_print xs outh
+
 
 --------------- part4 helpers --------------------
 -- Parallelize List of Tuples
 p_LoT :: [(Int, Int)] -> Int -> [Int] -> [(Int,Int)] -> [[(Int,Int)]] -> [[(Int,Int)]]
-p_LoT input i u_wires p_steps out | ((length input) == i) = out
+p_LoT input i u_wires p_steps out | ((length input) == i) = out ++ [p_steps]
 p_LoT input i u_wires p_steps out = do
     -- check if next tuple uses wires in u_wires. If not, add them to c_used_wires
     if not ((fst (input!!i) `elem` u_wires) || (snd (input!!i) `elem` u_wires))
@@ -165,3 +187,4 @@ a_TtLoT (x:xs) pair = x : [pair]
 aTtL :: [Int] -> (Int,Int) -> [Int]
 aTtL [] pair = [(fst pair), (snd pair)]
 aTtL (x:xs) pair = x : [(fst pair), (snd pair)]
+
