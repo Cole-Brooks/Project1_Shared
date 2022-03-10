@@ -68,6 +68,7 @@ sorting_f file_name = do
 
 create_f :: String -> IO ()
 create_f str_in = do
+
     putStrLn  str_in
 
 handle_command = do
@@ -136,6 +137,9 @@ main3 = do
         print pairs
         netPrint pairs
         putStrLn $ show (sortSeq [5,1,3,0] pairs)
+
+part6 :: Int -> IO()
+part6 x = writeFile "parallel.txt" (show (createNetwork x))
 
 createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
