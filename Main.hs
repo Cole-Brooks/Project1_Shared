@@ -154,13 +154,8 @@ main3 = do
         netPrint pairs
         putStrLn $ show (sortSeq [5,1,3,0] pairs)
 
-<<<<<<< HEAD
-part6 :: Int -> IO()
-part6 x = writeFile "parallel.txt" (show (createNetwork x))
 
-createNetwork :: Int -> [(Int,Int)]
-createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
-=======
+
 -- Writes the list
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
@@ -168,9 +163,9 @@ part4 x = do
     -- (mapM_ print  (fmap (fmap pairToBarWSpace) (p_LoT x [] [])))
 
 -- part4 x = do
---     outh <- openFile "parallel.txt" WriteMode 
+--     outh <- openFile "parallel.txt" WriteMode
 --     part4_print (fmap (fmap pairToBarWSpace) (p_LoT x 0 [] [] [])) outh
-    
+
 -- part4_print :: [[String]] -> Handle -> IO ()
 -- part4_print [] outh = hClose outh
 -- part4_print (x:xs) outh = do
@@ -186,7 +181,7 @@ cLoLoT (input:input_end) tmpStr = do
     cLoLoT input_end (tmpStr ++ cLoT input "")
 
 -- Convert List of Tuples to String
-cLoT :: [(Int, Int)] -> String -> String 
+cLoT :: [(Int, Int)] -> String -> String
 cLoT [] tmpStr = tmpStr ++ "\n"
 cLoT (input:input_end) tmpStr = do
     cLoT input_end (tmpStr ++ (pairToBarWSpace input))
@@ -203,7 +198,7 @@ p_LoT input i u_wires p_steps out = do
 -- p_LoT :: [(Int, Int)] -> [(Int,Int)] -> [[(Int,Int)]]-> [[(Int,Int)]]
 -- p_LoT [] u_tuples out = out
 -- p_LoT input u_tuples out = p_LoT (tail input) u_tuples (out ++ [(fParals input [] (a_TtLoT u_tuples (head input)) [])])
-    
+
 -- -- find parallels
 -- fParals :: [(Int, Int)] -> [Int] -> [(Int, Int)] -> [(Int,Int)] -> [(Int,Int)]
 -- fParals [] u_wires u_tuples out = out
@@ -222,4 +217,9 @@ aTtL :: [Int] -> (Int,Int) -> [Int]
 aTtL [] pair = [(fst pair), (snd pair)]
 aTtL (x:xs) pair = x : [(fst pair), (snd pair)]
 
->>>>>>> 07c3cd139f6463eefebd56a7598a2611b604a424
+
+part6 :: Int -> IO()
+part6 x = writeFile "parallel.txt" (cLoLoT (p_LoT (createNetwork x) 0 [] [] []) "")
+
+createNetwork :: Int -> [(Int,Int)]
+createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
