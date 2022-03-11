@@ -157,18 +157,6 @@ main3 = do
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
     writeFile "parallel.txt" (cLoLoT (p_LoT x 0 [] [] []) "")
-    -- (mapM_ print  (fmap (fmap pairToBarWSpace) (p_LoT x [] [])))
-
--- part4 x = do
---     outh <- openFile "parallel.txt" WriteMode 
---     part4_print (fmap (fmap pairToBarWSpace) (p_LoT x 0 [] [] [])) outh
-    
--- part4_print :: [[String]] -> Handle -> IO ()
--- part4_print [] outh = hClose outh
--- part4_print (x:xs) outh = do
---     hPutStrLn outh (head x ++ tail x)
---     part4_print xs outh
-
 
 --------------- part4 helpers --------------------
 -- Convert List of List of Tuples to String
