@@ -4,6 +4,7 @@ import System.IO
 import System.Environment ( getArgs )
 import Language.Haskell.TH.Lib (listP)
 import Data.List ()
+import Control.Monad
     {-
     User will use command 
     runhaskell Main.hs
@@ -67,7 +68,7 @@ parallel_f file_name = do
 
 sorting_f :: String -> IO ()
 sorting_f file_name = do
-    putStrLn  file_name
+    (parsePairs file_name) >>= part5
 
 create_f :: String -> IO ()
 create_f str_in = do
@@ -212,4 +213,31 @@ a_TtLoT (x:xs) pair = x : [pair]
 aTtL :: [Int] -> (Int,Int) -> [Int]
 aTtL [] pair = [(fst pair), (snd pair)]
 aTtL (x:xs) pair = x : [(fst pair), (snd pair)]
+
+--------------------------Part 5--------------------------
+part5 :: [(Int,Int)] -> IO ()
+part5 x = print (checkSorted (sortLoL (replicateM (greatestElem x 0) [0, 1]) x))
+
+-- run the sorting network on a list of lists
+sortLoL :: [[Int]] -> [(Int,Int)] -> [[Int]]
+sortLoL input pairs = fmap ((flip sortSeq) pairs) input
+
+-- Get Greatest Number from List of Tuples
+greatestElem :: [(Int,Int)] -> Int -> Int 
+greatestElem [] max = max
+greatestElem (x:xs) max = do
+    if max < (fst x)
+        then greatestElem xs (fst x)
+    else if max < (snd x)
+        then greatestElem xs (snd x)
+    else greatestElem xs max
+
+checkSortedInner :: [Int] -> Bool
+checkSortedInner [] = True
+checkSortedInner [a] = True
+checkSortedInner (x:(y:ys)) = if ((x,y) == (1,0)) then False else checkSortedInner (y:ys)
+
+checkSorted :: [[Int]] -> Bool
+checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
+
 
