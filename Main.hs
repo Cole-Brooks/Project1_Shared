@@ -72,6 +72,7 @@ sorting_f file_name = do
 
 create_f :: String -> IO ()
 create_f str_in = do
+
     putStrLn  str_in
 
 handle_command = do
@@ -155,6 +156,8 @@ main3 = do
         netPrint pairs
         putStrLn $ show (sortSeq [5,1,3,0] pairs)
 
+
+
 -- Writes the list
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
@@ -235,4 +238,8 @@ checkSortedInner (x:(y:ys)) = if ((x,y) == (1,0)) then False else checkSortedInn
 checkSorted :: [[Int]] -> Bool
 checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
 
+part6 :: Int -> IO()
+part6 x = writeFile "parallel.txt" (cLoLoT (pLoT (createNetwork x) 0 [] [] []) "")
 
+createNetwork :: Int -> [(Int,Int)]
+createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
