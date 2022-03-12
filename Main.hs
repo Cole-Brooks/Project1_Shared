@@ -235,7 +235,7 @@ checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
 --------------------------Part 6--------------------------
 
 part6 :: Int -> IO()
-part6 x = writeFile "parallel.txt" (cLoLoT (pLoT_NoCornerCases (createNetwork x) 0 [] [] []) "")
+part6 x = writeFile "parallel.txt" (read (parallelize (createNetwork x)))
 
 createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
