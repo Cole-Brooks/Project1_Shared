@@ -241,3 +241,32 @@ createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
 
 --------------------------Part 4b--------------------------
+
+has :: Eq a => a -> [a] -> Bool
+has i [] = False
+has i (x:xs)
+  | x == i = True
+  | otherwise = has i xs
+
+getNums :: [(Int,Int)] -> [Int]
+getNums [] = []
+getNums ((x,y):xs) = let ex = getNums xs in
+  (if (has x ex) then [] else [x]) ++ (if (has y ex) then [] else [y]) ++ ex
+
+-- Top-level parallelizing function
+parallelize :: [(Int,Int)] -> [[(Int,Int)]]
+parallelize x = let (set, remainder) = parallelInner2 ([],x) in set
+
+-- Continues running parallelInner until no un-grouped pairs are left
+parallelInner2 :: ([[(Int,Int)]],[(Int,Int)]) -> ([[(Int,Int)]],[(Int,Int)])
+parallelInner2 (a, []) = (a, [])
+parallelInner2 (a, remainder) = let (set, remainderInner) = parallelInner ([],[]) remainder in
+  parallelInner2 (a ++ [set], remainderInner)
+
+-- Returns the next parallel grouping from the provided network
+parallelInner :: ([(Int,Int)],[(Int,Int)]) -> [(Int,Int)] -> ([(Int,Int)],[(Int,Int)])
+parallelInner a [] = a
+parallelInner (goods,rejects) ((nexta, nextb):network) =
+  if (has (nexta,nextb) goods) then (goods,rejects++((nexta,nextb):network)) else
+  if ((has nexta (getNums goods)) || (has nextb (getNums goods))) then (parallelInner (goods, rejects ++ [(nexta,nextb)]) network)
+  else parallelInner (goods ++ [(nexta,nextb)], rejects) network
