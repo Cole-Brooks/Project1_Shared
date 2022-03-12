@@ -223,8 +223,12 @@ checkSortedInner (x:(y:ys)) = if ((x,y) == (1,0)) then False else checkSortedInn
 checkSorted :: [[Int]] -> Bool
 checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
 
+--------------------------Part 6--------------------------
+
 part6 :: Int -> IO()
 part6 x = writeFile "parallel.txt" (cLoLoT (pLoT (createNetwork x)[] []) "")
 
 createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
+
+--------------------------Part 4b--------------------------
