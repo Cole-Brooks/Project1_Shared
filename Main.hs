@@ -78,14 +78,14 @@ create_f str_in = do
 handle_command = do
     -- putStrLn "Enter Command: "
     cmd <- getArgs
-    putStrLn $ show cmd
+    -- putStrLn $ show cmd
 
     case cmd of
         ("Read":xs) -> read_f $ head xs
         ("Run":xs) -> run_f (head xs)  (read (head (tail xs)))
         ("Parallel":xs) -> parallel_f $ head xs
         ("Sorting":xs) -> sorting_f $ head xs
-        ("Create":xs) -> create_f $ head xs
+        ("Create":xs) -> part6 $ read $ head xs
         -- ("Test":xs) -> printList_f $ [ head xs ]
         otherwise -> putStrLn "Invalid Command"
     -- handle_command
