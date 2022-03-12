@@ -187,6 +187,15 @@ fParals (input:input_end) u_wires u_tuples out = do
         then fParals input_end (aTtL u_wires input) (u_tuples ++ [input]) (out ++ [input])
     else fParals input_end u_wires u_tuples out
 
+-- Parallelize List of Tuples
+pLoT_NoCornerCases :: [(Int, Int)] -> Int -> [Int] -> [(Int,Int)] -> [[(Int,Int)]] -> [[(Int,Int)]]
+pLoT_NoCornerCases input i u_wires p_steps out | ((length input) == i) = out ++ [p_steps]
+pLoT_NoCornerCases input i u_wires p_steps out = do
+    -- check if next tuple uses wires in u_wires. If not, add them to c_used_wires
+    if not ((fst (input!!i) `elem` u_wires) || (snd (input!!i) `elem` u_wires))
+        then pLoT_NoCornerCases input (i+1) (aTtL u_wires (input!!i)) (a_TtLoT p_steps (input!!i)) out
+    else pLoT_NoCornerCases input (i) [] [] (out ++ [p_steps])
+
 -- Add Tuple to List of Tuples
 a_TtLoT :: [(Int, Int)] -> (Int,Int) -> [(Int,Int)]
 a_TtLoT [] pair = [pair]
@@ -224,7 +233,7 @@ checkSorted :: [[Int]] -> Bool
 checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
 
 part6 :: Int -> IO()
-part6 x = writeFile "parallel.txt" (cLoLoT (pLoT (createNetwork x)[] []) "")
+part6 x = writeFile "parallel.txt" (cLoLoT (pLoT_NoCornerCases (createNetwork x) 0 [] [] []) "")
 
 createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
