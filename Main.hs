@@ -94,7 +94,6 @@ main :: IO ()
 main = do
     handle_command
 
-
 parsePairs :: String -> IO [(Int,Int)]
 parsePairs fn = do
         handle <- openFile fn ReadMode
@@ -136,7 +135,6 @@ main2 = do
         netPrint pairs
         part2 pairs
 
-
 swap :: [a] -> (Int,Int) -> [a]
 swap list (a,b) = [at_index item index | (item, index) <- zip list[0..length list - 1]]
     where at_index x index | index == (a-1) = list !! (b-1)
@@ -156,17 +154,10 @@ main3 = do
         netPrint pairs
         putStrLn $ show (sortSeq [5,1,3,0] pairs)
 
-
-
 -- Writes the list
 part4 :: [(Int,Int)] -> IO ()
 part4 x = do
-    writeFile "parallel.txt" (cLoLoT (pLoT x 0 [] [] []) "")
-    
-    -- debug. uncomment above line and comment remove everything below this before turning in
-    -- print (cLoLoT (pLoT x 0 [] [] []) "")
-    -- print "--------DEBUG-------------"
-    -- print (cLoLoT (pLoT x [] []) "")
+    writeFile "parallel.txt" (cLoLoT (pLoT x [] []) "")
 
 --------------- part4 helpers --------------------
 -- Convert List of List of Tuples to String
@@ -177,30 +168,24 @@ cLoLoT (input:input_end) tmpStr = do
 
 -- Convert List of Tuples to String
 cLoT :: [(Int, Int)] -> String -> String 
+cLoT [] tmpStr = tmpStr
 cLoT input tmpStr | (length input) == 1 = (tmpStr ++ (pairToBarWSpace (head input) True) ++ "\n")
 cLoT (input:input_end) tmpStr = do
     cLoT input_end (tmpStr ++ (pairToBarWSpace input False))
 
--- Parallelize List of Tuples
-pLoT :: [(Int, Int)] -> Int -> [Int] -> [(Int,Int)] -> [[(Int,Int)]] -> [[(Int,Int)]]
-pLoT input i u_wires p_steps out | ((length input) == i) = out ++ [p_steps]
-pLoT input i u_wires p_steps out = do
-    -- check if next tuple uses wires in u_wires. If not, add them to c_used_wires
-    if not ((fst (input!!i) `elem` u_wires) || (snd (input!!i) `elem` u_wires))
-        then pLoT input (i+1) (aTtL u_wires (input!!i)) (a_TtLoT p_steps (input!!i)) out
-    else pLoT input (i) [] [] (out ++ [p_steps])
-
--- pLoT :: [(Int, Int)] -> [(Int,Int)] -> [[(Int,Int)]]-> [[(Int,Int)]]
--- pLoT [] u_tuples out = out
--- pLoT input u_tuples out = pLoT (tail input) u_tuples (out ++ [(fParals input [] (a_TtLoT u_tuples (head input)) [])])
+pLoT :: [(Int, Int)] -> [(Int,Int)] -> [[(Int,Int)]]-> [[(Int,Int)]]
+pLoT [] u_tuples out = out
+pLoT input u_tuples out = do
+    let parals = (fParals input [] u_tuples [])
+    pLoT (tail input) (u_tuples ++ parals)  (out ++ [parals])
     
--- -- find parallels
--- fParals :: [(Int, Int)] -> [Int] -> [(Int, Int)] -> [(Int,Int)] -> [(Int,Int)]
--- fParals [] u_wires u_tuples out = out
--- fParals (input:input_end) u_wires u_tuples out = do
---     if not (((fst input) `elem` u_wires || (snd input) `elem` u_wires) || input `elem` u_tuples)
---         then fParals input_end (aTtL u_wires input) (a_TtLoT u_tuples input) (a_TtLoT out input)
---     else fParals input_end u_wires u_tuples out
+-- find parallels
+fParals :: [(Int, Int)] -> [Int] -> [(Int, Int)] -> [(Int,Int)] -> [(Int,Int)]
+fParals [] u_wires u_tuples out = out
+fParals (input:input_end) u_wires u_tuples out = do
+    if not (((fst input) `elem` u_wires || (snd input) `elem` u_wires) || input `elem` u_tuples)
+        then fParals input_end (aTtL u_wires input) (u_tuples ++ [input]) (out ++ [input])
+    else fParals input_end u_wires u_tuples out
 
 -- Add Tuple to List of Tuples
 a_TtLoT :: [(Int, Int)] -> (Int,Int) -> [(Int,Int)]
@@ -239,7 +224,7 @@ checkSorted :: [[Int]] -> Bool
 checkSorted x = foldr (&&) True (fmap (checkSortedInner) x)
 
 part6 :: Int -> IO()
-part6 x = writeFile "parallel.txt" (cLoLoT (pLoT (createNetwork x) 0 [] [] []) "")
+part6 x = writeFile "parallel.txt" (cLoLoT (pLoT (createNetwork x)[] []) "")
 
 createNetwork :: Int -> [(Int,Int)]
 createNetwork x = foldr (++) [] [([(w-1,w) | w <- reverse [2..v]]) | v <- [1..(x)]]
